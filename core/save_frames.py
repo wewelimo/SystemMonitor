@@ -3,7 +3,7 @@ import mss.tools
 import time
 import os
 
-from dbd.utils.monitoring_mss import Monitoring_mss
+from core.utils.monitoring_mss import Monitoring_mss
 
 
 if __name__ == '__main__':

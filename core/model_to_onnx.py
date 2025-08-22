@@ -4,8 +4,8 @@ import os
 import onnxruntime
 import torch
 
-from dbd.networks.model import Model
-from dbd.utils.frame_grabber import get_monitor_attributes_test
+from core.networks.model import Model
+from core.utils.frame_grabber import get_monitor_attributes_test
 
 
 if __name__ == '__main__':

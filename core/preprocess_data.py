@@ -1,7 +1,7 @@
 import glob
 import os
 
-from dbd.utils.dataset_utils import delete_similar_images, delete_consecutive_images
+from core.utils.dataset_utils import delete_similar_images, delete_consecutive_images
 
 
 if __name__ == '__main__':

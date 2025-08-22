@@ -3,7 +3,7 @@ import numpy as np
 import bettercam
 from PIL import Image
 
-from dbd.utils.monitoring_mss import Monitoring
+from core.utils.monitoring_mss import Monitoring
 
 BETTERCAM_MONITORS = bettercam.__factory.outputs[0]
 

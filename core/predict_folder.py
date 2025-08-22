@@ -10,16 +10,16 @@ from PIL import Image
 
 def infer_from_folder_ckpt(folder, checkpoint):
     import pytorch_lightning as pl
-    from dbd.networks.model import Model
-    from dbd.datasets.transforms import get_validation_transforms
-    from dbd.datasets.datasetLoader import DBD_dataset
+    from core.networks.model import Model
+from core.datasets.transforms import get_validation_transforms
+from core.datasets.datasetLoader import Performance_dataset
 
     # Dataset
     images = glob(os.path.join(folder, "*.*"))
     images = np.array([[image, 0] for image in images])
 
     test_transforms = get_validation_transforms()
-    dataset = DBD_dataset(images, test_transforms)
+    dataset = Performance_dataset(images, test_transforms)
     dataloader = dataset.get_dataloader(batch_size=128, num_workers=8)
 
     model = Model()
@@ -32,7 +32,7 @@ def infer_from_folder_ckpt(folder, checkpoint):
 
 
 def infer_from_folder_onnx(folder, model_path, use_gpu=True, nb_cpu_threads=1, copy=False, move=False):
-    from dbd.AI_model import AI_model
+    from core.AI_model import AI_model
 
     images = sorted(glob(os.path.join(folder, "*.*")))
     ai_model = AI_model(model_path=model_path, use_gpu=use_gpu, nb_cpu_threads=nb_cpu_threads)

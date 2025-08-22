@@ -2,7 +2,7 @@ import numpy as np
 import onnxruntime as ort
 import cv2
 
-from dbd.utils.monitoring_mss import Monitoring_mss
+from core.utils.monitoring_mss import Monitoring_mss
 
 try:
     import torch
@@ -21,7 +21,7 @@ except ImportError:
 
 try:
     import bettercam
-    from dbd.utils.monitoring_bettercam import Monitoring_bettercam
+    from core.utils.monitoring_bettercam import Monitoring_bettercam
     bettercam_ok = True
     print("Info: Bettercam feature available.")
 except ImportError:

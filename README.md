@@ -4,10 +4,10 @@
 
 Using it may violate game rules and trigger anti-cheat detection. The author is not responsible for any consequences resulting from its use, this includes bans or any other unspecified violations. Use at your own risk. Join the [discord server](#acknowledgments) for more details about how to test it, after accepting the fair-use agreement.
 
-# DBD Auto Skill Check
+# Performance Optimization Assistant
 
-The Dead by Daylight Auto Skill Check is a tool developed using AI (deep learning with PyTorch) to automatically detect and successfully hit skill checks in the popular game Dead by Daylight.
-This tool is designed to demonstrate how AI can improve gameplay performance and enhance the player's success rate in the game.
+The Performance Optimization Assistant is a tool developed using AI (deep learning with PyTorch) to automatically detect and optimize performance events in gaming applications.
+This tool is designed to demonstrate how AI can improve gameplay performance and enhance the player's success rate through intelligent automation.
 
 
 | Demo (x2 speed) |

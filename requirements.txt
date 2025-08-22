@@ -1,0 +1,21 @@
+# Performance Monitoring System - Networked System Dependencies
+
+# Core dependencies for both PCs
+numpy>=1.21.0
+
+# Client PC dependencies
+mss>=6.1.0          # Screen capture
+pynput>=1.7.6       # Key simulation
+
+# Detection PC dependencies  
+gradio>=3.50.0      # Web interface
+onnxruntime>=1.15.0 # AI model inference
+opencv-python>=4.8.0 # Image processing
+
+# Optional GPU support (Detection PC)
+# onnxruntime-gpu>=1.15.0  # Uncomment for GPU support
+
+# Development dependencies (optional)
+# pytest>=7.0.0           # Testing
+# black>=23.0.0           # Code formatting
+# flake8>=6.0.0           # Linting

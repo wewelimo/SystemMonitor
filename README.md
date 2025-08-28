@@ -239,8 +239,6 @@ In conclusion, our model achieves high accuracy thanks to the high-quality datas
 
 # Acknowledgments
 
-The project was made and is maintained by me ([Manuteaa](https://github.com/Manuteaa)). If you enjoy this project, consider giving it a ⭐! Starring the repository helps others discover it, and shows support for the work put into it. Your stars motivate me to add new features and address any bugs.
+The project was made and is maintained by me. If you enjoy this project, consider giving it a ⭐! Starring the repository helps others discover it, and shows support for the work put into it. Your stars motivate me to add new features and address any bugs.
 
-Feel free to open a new issue for any question, suggestion or issue. You can also join the discord server https://discord.gg/3mewehHHpZ for more info and help.
-
-- A big thanks to [hemlock12](https://github.com/hemlock12) for the data collection help !
+Feel free to open a new issue for any question, suggestion or issue.

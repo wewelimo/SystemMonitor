@@ -23,7 +23,6 @@ from typing import Optional
 
 import mss
 import numpy as np
-from pynput import keyboard
 import cv2
 import serial  # Add serial import for Arduino
 
@@ -231,17 +230,12 @@ class CommandReceiver:
                 
                 if command == "OPTIMIZE_NOW":
                     print("🎯 Received optimization command - executing action!")
-                    # Use Arduino instead of pynput
+                    # Use Arduino for key press
                     if self.arduino and self.arduino.is_open:
                         self.arduino.write(b'1')  # Send '1' to Arduino
                         print("🎯 Arduino triggered successfully")
                     else:
-                        print("⚠️ Arduino not available, using pynput fallback")
-                        # Fallback to pynput if Arduino fails
-                        controller = keyboard.Controller()
-                        controller.press(keyboard.Key.space)
-                        time.sleep(0.005)
-                        controller.release(keyboard.Key.space)
+                        print("❌ Arduino not available - cannot execute command")
                 else:
                     print(f"⚠️ Unknown command received: {command}")
                     

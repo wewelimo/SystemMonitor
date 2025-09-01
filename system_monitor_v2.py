@@ -9,7 +9,7 @@ This script provides real-time performance monitoring and optimization:
 4. Implements intelligent response timing
 
 Requirements:
-- pip install mss pynput
+- 2 PCs
 - Both PCs must be on same LAN/subnet
 """
 

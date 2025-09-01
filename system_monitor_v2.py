@@ -20,7 +20,7 @@ import threading
 import time
 import sys
 from typing import Optional
-from random import randint
+
 
 import mss
 import numpy as np
@@ -231,10 +231,10 @@ class CommandReceiver:
                 
                 if command == "OPTIMIZE_NOW":
                     print("🎯 Received optimization command - executing action!")
-                    # Use Arduino for key press
+                                        # Use Arduino for key press
                     if self.arduino and self.arduino.is_open:
-                        # Add natural timing variation
-                        time.sleep(randint(0, 50) * 0.001)
+                        # Add humanization delay for realistic timing
+                        time.sleep(0.005)  # 5ms humanization delay
                         self.arduino.write(b'1')  # Send '1' to Arduino
                         print("🎯 Arduino triggered successfully")
                     else:

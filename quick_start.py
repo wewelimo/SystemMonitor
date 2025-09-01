@@ -106,56 +106,56 @@ def configure_system():
             print("\n❌ Configuration cancelled")
             return None
     
-    is_game_pc = choice == "1"
-    
-    if is_game_pc:
-        print("\n🎮 Client PC Configuration")
-        print("-" * 30)
+        is_client_pc = choice == "1"
         
-        # Get Detection PC IP
-        detection_ip = input(f"Enter Detection PC IP address: ").strip()
-        if not detection_ip:
-            print("❌ Detection PC IP is required")
-            return None
-        
-        # Get monitor ID
-        monitor_id = input("Enter monitor ID to capture [1]: ").strip()
-        if not monitor_id:
-            monitor_id = "1"
-        
-        # Update system_monitor_v2.py configuration
-        update_client_pc_config(detection_ip, monitor_id)
-        
-        return {
-            "type": "client_pc",
-            "detection_ip": detection_ip,
-            "monitor_id": monitor_id
-        }
-        
-    else:
-        print("\n🤖 Detection PC Configuration")
-        print("-" * 30)
-        
-        # Get Client PC IP
-        client_ip = input(f"Enter Client PC IP address: ").strip()
-        if not client_ip:
-            print("❌ Client PC IP is required")
-            return None
-        
-        # Check for AI models
-        models = get_available_models()
-        if not models:
-            print("⚠️ No AI model files found in models/ folder")
-            print("Please ensure you have .onnx or .trt files in the models/ folder")
-        
-        # Update detection_pc.py configuration
-        update_detection_pc_config(client_ip)
-        
-        return {
-            "type": "detection_pc", 
-            "client_ip": client_ip,
-            "models": models
-        }
+        if is_client_pc:
+            print("\n🎮 Client PC Configuration")
+            print("-" * 30)
+            
+            # Get Detection PC IP
+            detection_ip = input(f"Enter Detection PC IP address: ").strip()
+            if not detection_ip:
+                print("❌ Detection PC IP is required")
+                return None
+            
+            # Get monitor ID
+            monitor_id = input("Enter monitor ID to capture [1]: ").strip()
+            if not monitor_id:
+                monitor_id = "1"
+            
+            # Update system_monitor_v2.py configuration
+            update_client_pc_config(detection_ip, monitor_id)
+            
+            return {
+                "type": "client_pc",
+                "detection_ip": detection_ip,
+                "monitor_id": monitor_id
+            }
+            
+        else:
+            print("\n🤖 Detection PC Configuration")
+            print("-" * 30)
+            
+            # Get Client PC IP
+            client_ip = input(f"Enter Client PC IP address: ").strip()
+            if not client_ip:
+                print("❌ Client PC IP is required")
+                return None
+            
+            # Check for AI models
+            models = get_available_models()
+            if not models:
+                print("⚠️ No AI model files found in models/ folder")
+                print("Please ensure you have .onnx or .trt files in the models/ folder")
+            
+            # Update detection_pc.py configuration
+            update_detection_pc_config(client_ip)
+            
+            return {
+                "type": "detection_pc", 
+                "client_ip": client_ip,
+                "models": models
+            }
 
 def update_client_pc_config(detection_ip, monitor_id):
     """Update the Client PC configuration file"""

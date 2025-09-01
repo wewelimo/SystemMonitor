@@ -5,14 +5,14 @@ from glob import glob
 
 import math
 
-from dbd.datasets.transforms import get_training_transforms, get_validation_transforms
+from core.datasets.transforms import get_training_transforms, get_validation_transforms
 from torch.utils.data import DataLoader, WeightedRandomSampler, Dataset
 from torchvision.io import read_image, ImageReadMode
 
 
-class DBD_dataset(Dataset):
+class Performance_dataset(Dataset):
     """
-    Dataset class for DBD dataset
+    Dataset class for Performance monitoring
     - Handles custom sampler to deal with class imbalance
     """
 
@@ -60,7 +60,7 @@ class DBD_dataset(Dataset):
         return dataloader
 
 
-def _parse_dbd_datasetfolder(root_dataset_path):
+def _parse_performance_datasetfolder(root_dataset_path):
     """
     Get dataset as list of pairs {image path, label} in numpy array format
     Args:
@@ -101,7 +101,7 @@ def get_dataloaders(root_dataset_path, batch_size=32, seed=42, num_workers=0):
     assert os.path.exists(root_dataset_path)
 
     # Parse dataset
-    dataset = _parse_dbd_datasetfolder(root_dataset_path)  # shape is (nb_images, 2)
+    dataset = _parse_performance_datasetfolder(root_dataset_path)  # shape is (nb_images, 2)
 
     # Shuffle dataset and split into a training set and a validation set
     generator = np.random.default_rng(seed)
@@ -112,18 +112,18 @@ def get_dataloaders(root_dataset_path, batch_size=32, seed=42, num_workers=0):
 
     # Set data loaders
     train_transforms = get_training_transforms()
-    dataset_train = DBD_dataset(dataset_train, train_transforms)
+    dataset_train = Performance_dataset(dataset_train, train_transforms)
     dataloader_train = dataset_train.get_dataloader(batch_size=batch_size, num_workers=num_workers, use_balanced_sampler=True)
 
     val_transforms = get_validation_transforms()
-    dataset_val = DBD_dataset(dataset_val, val_transforms)
+    dataset_val = Performance_dataset(dataset_val, val_transforms)
     dataloader_val = dataset_val.get_dataloader(batch_size=batch_size, num_workers=num_workers, use_balanced_sampler=False)
 
     return dataloader_train, dataloader_val
 
 
 if __name__ == '__main__':
-    from dbd.datasets.transforms import MEAN, STD
+    from core.datasets.transforms import MEAN, STD
     import cv2
 
     dataset_root = "dataset/"

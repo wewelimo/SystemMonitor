@@ -75,10 +75,10 @@ class DataTransmitter:
             self.socket.settimeout(5.0)
             self.socket.connect((self.analysis_ip, self.tcp_port))
             self.connected = True
-            print(f"✅ Connected to Analysis PC at {self.analysis_ip}:{self.tcp_port}")
+            print(f"Connected to Analysis PC at {self.analysis_ip}:{self.tcp_port}")
             return True
         except Exception as e:
-            print(f"❌ Failed to connect to Analysis PC: {e}")
+            print(f"Failed to connect to Analysis PC: {e}")
             self.connected = False
             return False
     
@@ -91,7 +91,7 @@ class DataTransmitter:
             except:
                 pass
             self.socket = None
-        print("🔌 Disconnected from Analysis PC")
+        print("Disconnected from Analysis PC")
     
     def send_frame(self, frame: np.ndarray) -> bool:
         """Send a frame over TCP with proper framing and compression"""
@@ -99,7 +99,6 @@ class DataTransmitter:
             return False
             
         try:
-            # Compress frame to JPEG to reduce size
             try:
                 # Convert to BGR for OpenCV
                 frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
@@ -108,21 +107,20 @@ class DataTransmitter:
                 _, compressed_frame = cv2.imencode('.jpg', frame_bgr, encode_param)
                 frame_data = compressed_frame.tobytes()
                 
-                # Debug: Log compression occasionally
                 if hasattr(self, 'debug_frame_count'):
                     self.debug_frame_count += 1
                 else:
                     self.debug_frame_count = 1
                     
-                if self.debug_frame_count % 60 == 0:  # Every 60 frames
+                if self.debug_frame_count % 60 == 0:
                     original_size = frame.nbytes
                     compressed_size = len(frame_data)
                     compression_ratio = compressed_size / original_size
-                    print(f"📊 Compression: {original_size} → {compressed_size} bytes ({compression_ratio:.2f}x)")
+                    print(f"Compression: {original_size} → {compressed_size} bytes ({compression_ratio:.2f}x)")
                     
             except Exception as e:
                 # Fallback to pickle if compression fails
-                print(f"⚠️ JPEG compression failed: {e}, using pickle fallback")
+                print(f"JPEG compression failed: {e}, using pickle fallback")
                 frame_data = pickle.dumps(frame)
             
             frame_size = len(frame_data)
@@ -134,7 +132,7 @@ class DataTransmitter:
             
             return True
         except Exception as e:
-            print(f"❌ Failed to send frame: {e}")
+            print(f"Failed to send frame: {e}")
             self.connected = False
             return False
     
@@ -142,7 +140,7 @@ class DataTransmitter:
         """Background thread to maintain connection and reconnect if needed"""
         while self.running:
             if not self.connected:
-                print("🔄 Attempting to reconnect to Analysis PC...")
+                print("Attempting to reconnect to Analysis PC...")
                 if self.connect():
                     time.sleep(1)
                 else:
@@ -156,7 +154,6 @@ class DataTransmitter:
         self.connection_thread = threading.Thread(target=self.maintain_connection, daemon=True)
         self.connection_thread.start()
         
-        # Initial connection attempt
         self.connect()
     
     def stop(self):
@@ -174,14 +171,12 @@ class CommandReceiver:
         self.socket = None
         self.running = False
         self.listener_thread = None
-        # self.controller = keyboard.Controller()  # Comment out pynput controller
         
-        # Add Arduino connection
         try:
-            self.arduino = serial.Serial('COM5', 9600, timeout=1)  # Change COM5 to your actual port
-            print("✅ Arduino connected successfully")
+            self.arduino = serial.Serial('COM5', 9600, timeout=1)
+            print("Arduino connected successfully")
         except Exception as e:
-            print(f"❌ Failed to connect to Arduino: {e}")
+            print(f"Failed to connect to Arduino: {e}")
             self.arduino = None
     
     def start(self):
@@ -192,13 +187,13 @@ class CommandReceiver:
             self.socket.settimeout(1.0)
             self.running = True
             
-            print(f"🎧 Listening for UDP commands on port {self.udp_port}")
+            print(f"Listening for UDP commands on port {self.udp_port}")
             
             self.listener_thread = threading.Thread(target=self._listen_loop, daemon=True)
             self.listener_thread.start()
             
         except Exception as e:
-            print(f"❌ Failed to start UDP listener: {e}")
+            print(f"Failed to start UDP listener: {e}")
     
     def stop(self):
         """Stop listening for UDP commands"""
@@ -214,7 +209,7 @@ class CommandReceiver:
         if hasattr(self, 'arduino') and self.arduino:
             try:
                 self.arduino.close()
-                print("✅ Arduino connection closed")
+                print("Arduino connection closed")
             except:
                 pass
             self.arduino = None
@@ -230,23 +225,21 @@ class CommandReceiver:
                 command = data.decode('utf-8').strip()
                 
                 if command == "OPTIMIZE_NOW":
-                    print("🎯 Received optimization command - executing action!")
+                    print("Received optimization command - executing action!")
                                         # Use Arduino for key press
                     if self.arduino and self.arduino.is_open:
-                        # Add humanization delay for realistic timing
-                        time.sleep(0.005)  # 5ms humanization delay
                         self.arduino.write(b'1')  # Send '1' to Arduino
-                        print("🎯 Arduino triggered successfully")
+                        print("Arduino triggered successfully")
                     else:
-                        print("❌ Arduino not available - cannot execute command")
+                        print("Arduino not available - cannot execute command")
                 else:
-                    print(f"⚠️ Unknown command received: {command}")
+                    print(f"Unknown command received: {command}")
                     
             except socket.timeout:
                 continue
             except Exception as e:
-                if self.running:  # Only print error if we're supposed to be running
-                    print(f"❌ UDP listener error: {e}")
+                if self.running:
+                    print(f"UDP listener error: {e}")
                 break
 
 class ScreenCapture:
@@ -284,10 +277,10 @@ class ScreenCapture:
             "height": crop_size
         }
         
-        print(f"📱 Monitor {monitor_id}: {monitor_width}x{monitor_height}")
-        print(f"🎯 Crop area: {crop_size}x{crop_size} at ({left}, {top})")
-        print(f"🧠 Smart frame skipping: {self.change_threshold*100:.1f}% change threshold")
-        print(f"🎯 Adaptive mode: High priority for performance monitoring")
+        print(f"Monitor {monitor_id}: {monitor_width}x{monitor_height}")
+        print(f"Crop area: {crop_size}x{crop_size} at ({left}, {top})")
+        print(f"Smart frame skipping: {self.change_threshold*100:.1f}% change threshold")
+        print(f"Adaptive mode: High priority for performance monitoring")
     
     def capture_frame(self) -> np.ndarray:
         """Capture and crop a frame from the monitor with smart skipping"""
@@ -322,7 +315,7 @@ class ScreenCapture:
                     self.static_frame_count += 1
                     if self.static_frame_count < self.max_static_frames:
                         # Skip this frame, but ensure minimum frame rate
-                        if self.static_frame_count % 3 == 0:  # Force send every 3rd frame
+                        if self.static_frame_count % 3 == 0:
                             self.static_frame_count = 0
                             return frame
                         return None
@@ -338,7 +331,7 @@ class ScreenCapture:
             return frame
             
         except Exception as e:
-            print(f"❌ Frame capture error: {e}")
+            print(f"Frame capture error: {e}")
             return None
     
     def cleanup(self):
@@ -350,11 +343,11 @@ class ScreenCapture:
         """Manually trigger high priority mode for testing"""
         self.high_priority_mode = True
         self.high_priority_frames = 0
-        print("🎯 High priority mode triggered manually")
+        print("High priority mode triggered manually")
 
 def main():
     """Main function to run the Performance Monitoring system"""
-    print("🎮 Performance Monitoring System - Client PC")
+    print("Performance Monitoring System - Client PC")
     print("=" * 50)
     
     # Configuration
@@ -368,7 +361,7 @@ def main():
     else:
         monitor_id = int(monitor_id)
     
-    print(f"\n📋 Configuration:")
+    print(f"\nConfiguration:")
     print(f"   Analysis PC: {analysis_ip}:{TCP_PORT}")
     print(f"   UDP Listener: Port {UDP_PORT}")
     print(f"   Monitor ID: {monitor_id}")
@@ -382,12 +375,12 @@ def main():
     
     try:
         # Start components
-        print("🚀 Starting Performance Monitoring system...")
+        print("Starting Performance Monitoring system...")
         data_transmitter.start()
         command_receiver.start()
         
-        print("✅ System started! Press Ctrl+C to stop.")
-        print("📊 Sending performance data to Analysis PC...")
+        print("System started! Press Ctrl+C to stop.")
+        print("Sending performance data to Analysis PC...")
         
         # Main loop - capture and send frames
         frame_count = 0
@@ -407,7 +400,6 @@ def main():
                 if data_transmitter.send_frame(frame):
                     frame_count += 1
                     
-                    # Show FPS and bandwidth stats every second
                     elapsed = time.time() - start_time
                     if elapsed >= 1.0:
                         fps = frame_count / elapsed
@@ -421,23 +413,22 @@ def main():
                         
                         # Color code bandwidth usage
                         if estimated_bandwidth <= TARGET_BANDWIDTH_MBPS:
-                            bw_status = "🟢"
+                            bw_status = "GREEN"
                         elif estimated_bandwidth <= MAX_BANDWIDTH_MBPS:
-                            bw_status = "🟡"
+                            bw_status = "YELLOW"
                         else:
-                            bw_status = "🔴"
+                            bw_status = "RED"
                         
-                        # Show adaptive mode status
-                        adaptive_status = "🎯" if screen_capture.high_priority_mode else "💤"
+                        adaptive_status = "HIGH" if screen_capture.high_priority_mode else "LOW"
                         
-                        print(f"📊 FPS: {fps:.1f} | Captured: {capture_fps:.1f} | Skipped: {skip_rate:.1f}% | {bw_status} BW: {estimated_bandwidth:.1f} Mbps | {adaptive_status} Mode")
+                        print(f"FPS: {fps:.1f} | Captured: {capture_fps:.1f} | Skipped: {skip_rate:.1f}% | {bw_status} BW: {estimated_bandwidth:.1f} Mbps | {adaptive_status} Mode")
                         
                         frame_count = 0
                         frames_captured = 0
                         frames_skipped = 0
                         start_time = time.time()
                 else:
-                    print("⚠️ Frame send failed, will retry...")
+                    print("Frame send failed, will retry...")
             else:
                 frames_skipped += 1
             
@@ -448,15 +439,14 @@ def main():
                 time.sleep(sleep_time)
                 
     except KeyboardInterrupt:
-        print("\n🛑 Shutting down Performance Monitoring system...")
+        print("\nShutting down Performance Monitoring system...")
     except Exception as e:
-        print(f"❌ Unexpected error: {e}")
+        print(f"Unexpected error: {e}")
     finally:
-        # Cleanup
         data_transmitter.stop()
         command_receiver.stop()
         screen_capture.cleanup()
-        print("✅ Performance Monitoring system stopped.")
+        print("Performance Monitoring system stopped.")
 
 if __name__ == "__main__":
     main()

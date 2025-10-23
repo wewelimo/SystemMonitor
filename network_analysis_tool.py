@@ -62,8 +62,8 @@ class FrameReceiver:
             self.server_socket.settimeout(1.0)
             self.running = True
             
-            print(f"🎧 TCP server started on port {self.tcp_port}")
-            print("⏳ Waiting for Client PC connection...")
+            print(f"TCP server started on port {self.tcp_port}")
+            print("Waiting for Client PC connection...")
             
             self.receiver_thread = threading.Thread(target=self._receive_loop, daemon=True)
             self.receiver_thread.start()
@@ -71,7 +71,7 @@ class FrameReceiver:
             return True
             
         except Exception as e:
-            print(f"❌ Failed to start TCP server: {e}")
+            print(f"Failed to start TCP server: {e}")
             self.running = False
             return False
     
@@ -104,12 +104,12 @@ class FrameReceiver:
                     try:
                         self.client_socket, self.client_address = self.server_socket.accept()
                         self.client_socket.settimeout(1.0)
-                        print(f"✅ Client PC connected from {self.client_address}")
+                        print(f"Client PC connected from {self.client_address}")
                     except socket.timeout:
                         continue
                     except Exception as e:
                         if self.running:
-                            print(f"❌ Connection accept error: {e}")
+                            print(f"Connection accept error: {e}")
                         continue
                 
                 # Receive frame data
@@ -136,14 +136,13 @@ class FrameReceiver:
                         if frame is not None:
                             # Convert BGR to RGB for consistency
                             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                            # Only log occasionally to avoid spam
                             if hasattr(self, 'log_counter'):
                                 self.log_counter += 1
                             else:
                                 self.log_counter = 1
                             
-                            if self.log_counter % 120 == 0:  # Every 120 frames
-                                print(f"📸 JPEG frame decoded: {frame.shape}, size: {len(frame_data)} bytes")
+                            if self.log_counter % 120 == 0:
+                                print(f"JPEG frame decoded: {frame.shape}, size: {len(frame_data)} bytes")
                         else:
                             # Fallback to pickle (uncompressed frames)
                             frame = pickle.loads(frame_data)
@@ -152,8 +151,8 @@ class FrameReceiver:
                             else:
                                 self.log_counter = 1
                             
-                            if self.log_counter % 120 == 0:  # Every 120 frames
-                                print(f"📸 Pickle frame decoded: {frame.shape}, size: {len(frame_data)} bytes")
+                            if self.log_counter % 120 == 0:
+                                print(f"Pickle frame decoded: {frame.shape}, size: {len(frame_data)} bytes")
                     except Exception as e:
                         # Fallback to pickle if JPEG decoding fails
                         try:
@@ -163,10 +162,10 @@ class FrameReceiver:
                             else:
                                 self.log_counter = 1
                             
-                            if self.log_counter % 120 == 0:  # Every 120 frames
-                                print(f"📸 Pickle fallback frame: {frame.shape}, size: {len(frame_data)} bytes")
+                            if self.log_counter % 120 == 0:
+                                print(f"Pickle fallback frame: {frame.shape}, size: {len(frame_data)} bytes")
                         except Exception as e2:
-                            print(f"❌ Failed to decode frame: JPEG error: {e}, Pickle error: {e2}")
+                            print(f"Failed to decode frame: JPEG error: {e}, Pickle error: {e2}")
                             print(f"   Frame data size: {len(frame_data)} bytes, first 10 bytes: {frame_data[:10]}")
                             continue  # Skip this frame
                     
@@ -177,7 +176,7 @@ class FrameReceiver:
                 except socket.timeout:
                     continue
                 except Exception as e:
-                    print(f"❌ Frame receive error: {e}")
+                    print(f"Frame receive error: {e}")
                     # Only close connection for serious errors, not frame decode issues
                     if "Connection closed" in str(e) or "Connection reset" in str(e):
                         try:
@@ -186,14 +185,14 @@ class FrameReceiver:
                             pass
                         self.client_socket = None
                         self.client_address = None
-                        print("🔄 Waiting for new Client PC connection...")
+                        print("Waiting for new Client PC connection...")
                     else:
-                        print("⚠️ Frame error, continuing...")
+                        print("Frame error, continuing...")
                         continue
                     
             except Exception as e:
                 if self.running:
-                    print(f"❌ Receiver loop error: {e}")
+                    print(f"Receiver loop error: {e}")
                 break
 
 class CommandSender:
@@ -208,23 +207,23 @@ class CommandSender:
         """Initialize UDP socket"""
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            print(f"📡 UDP sender ready for {self.client_ip}:{self.udp_port}")
+            print(f"UDP sender ready for {self.client_ip}:{self.udp_port}")
             return True
         except Exception as e:
-            print(f"❌ Failed to initialize UDP sender: {e}")
+            print(f"Failed to initialize UDP sender: {e}")
             return False
     
     def send_command(self, command: str) -> bool:
         """Send a command to Client PC"""
         if not self.socket:
-            print(f"❌ UDP socket not initialized")
+            print(f"UDP socket not initialized")
             return False
             
         try:
             self.socket.sendto(command.encode('utf-8'), (self.client_ip, self.udp_port))
             return True
         except Exception as e:
-            print(f"❌ Failed to send command: {e}")
+            print(f"Failed to send command: {e}")
             return False
     
     def cleanup(self):
@@ -259,10 +258,9 @@ class NetworkedAIProcessor:
         self.current_fps = 0.0
         self.total_frames_received = 0
         
-        # Cooldown mechanism to prevent command spam
         self.last_command_time = 0.0
         self.command_cooldown = 0.5  # 0.5 second cooldown like app.py
-        self.cooldown_log_counter = 0  # Reduce cooldown message spam
+        self.cooldown_log_counter = 0
         self.last_skill_check_type = None  # Track last skill check type for cooldown
         
         # Group similar skill check types to prevent cooldown bypass
@@ -300,12 +298,12 @@ class NetworkedAIProcessor:
     def _load_ai_model(self):
         """Load the AI model"""
         if not self.model_path:
-            print("⚠️ No AI model path specified, skipping model loading")
+            print("No AI model path specified, skipping model loading")
             self.ai_model = None
             return
             
         try:
-            print(f"🤖 Loading AI model: {self.model_path}")
+            print(f"Loading AI model: {self.model_path}")
             
             # Create AI model without starting the monitor (we'll use network frames instead)
             # Note: monitor_id doesn't matter since we disable the monitor immediately
@@ -313,17 +311,17 @@ class NetworkedAIProcessor:
             
             # Stop the monitor immediately since we don't need it for network frames
             if hasattr(self.ai_model, 'monitor') and self.ai_model.monitor:
-                print(f"🔧 Stopping local monitor: {type(self.ai_model.monitor)}")
+                print(f"Stopping local monitor: {type(self.ai_model.monitor)}")
                 self.ai_model.monitor.stop()
                 self.ai_model.monitor = None
-                print("✅ Disabled local monitor (using network frames)")
+                print("Disabled local monitor (using network frames)")
             else:
-                print("⚠️ No monitor found to disable")
+                print("No monitor found to disable")
             
             execution_provider = self.ai_model.check_provider()
-            print(f"✅ AI model loaded successfully using {execution_provider}")
+            print(f"AI model loaded successfully using {execution_provider}")
         except Exception as e:
-            print(f"❌ Failed to load AI model: {e}")
+            print(f"Failed to load AI model: {e}")
             self.ai_model = None
     
     def _process_frame(self, frame: np.ndarray):
@@ -335,18 +333,17 @@ class NetworkedAIProcessor:
         # Update bandwidth counter
         self.bandwidth_counter += 1
         
-        # Only log every 1000 frames to reduce spam (much cleaner)
         if self.total_frames_received % 1000 == 0:
             # Calculate bandwidth (assuming compressed frames)
             elapsed = time.time() - self.bandwidth_start_time
-            if elapsed >= 5.0:  # Show bandwidth every 5 seconds instead of every second
+            if elapsed >= 5.0:
                 # Estimate received bandwidth (compressed frames are smaller)
                 compression_ratio = 0.4  # 80% JPEG quality = ~40% size
                 self.current_bandwidth = (self.bandwidth_counter * 224 * 224 * 3 * 8 * compression_ratio) / (1024 * 1024) / elapsed
                 self.bandwidth_counter = 0
                 self.bandwidth_start_time = time.time()
             
-            print(f"📸 Frame #{self.total_frames_received} | 📊 BW: {self.current_bandwidth:.1f} Mbps")
+            print(f"Frame #{self.total_frames_received} | BW: {self.current_bandwidth:.1f} Mbps")
         
         if self.ai_model is None:
             # Update FPS counter even without AI model
@@ -383,10 +380,9 @@ class NetworkedAIProcessor:
                 
                 # Skip low-confidence detections to prevent false positives
                 if detection_confidence < self.min_confidence:
-                    # Only log every 50th low confidence detection to reduce spam
                     self.cooldown_log_counter += 1
                     if self.cooldown_log_counter % 50 == 1:
-                        print(f"⚠️ Low confidence detection '{desc}' ({detection_confidence:.3f}) - ignoring to prevent false positives [showing 1 of {self.cooldown_log_counter}]")
+                        print(f"Low confidence detection '{desc}' ({detection_confidence:.3f}) - ignoring to prevent false positives [showing 1 of {self.cooldown_log_counter}]")
                     return
                 
                 # Get the skill check group (e.g., 'repair-heal' for 'repair-heal (great)')
@@ -397,48 +393,44 @@ class NetworkedAIProcessor:
                 is_different_group = (current_group != last_group)
                 
                 if is_different_group or (current_time - self.last_command_time >= self.command_cooldown):
-                    # Clean, minimal command logging
                     success = self.command_sender.send_command("OPTIMIZE_NOW")
                     if success:
-                        print(f"🎯 {desc} - Command sent ✅")
+                        print(f"{desc} - Command sent")
                         self.last_command_time = current_time  # Update cooldown timer
                         self.last_skill_check_type = desc  # Update skill check type
-                        self.cooldown_log_counter = 0  # Reset spam counter
+                        self.cooldown_log_counter = 0
                     else:
-                        print(f"❌ Failed to send command to {self.command_sender.client_ip}:{self.command_sender.udp_port}")
+                        print(f"Failed to send command to {self.command_sender.client_ip}:{self.command_sender.udp_port}")
                 else:
-                    # Still detecting same skill check GROUP in cooldown period - no logging needed
                     self.cooldown_log_counter += 1
-                    # Removed cooldown spam messages for cleaner output
-            # Only log non-None predictions occasionally to reduce spam
             elif desc != "None" and self.total_frames_received % 300 == 0:  # Much less frequent
-                print(f"📊 No action needed for: {desc} (confidence: {probs.get(desc, 0):.3f})")
+                print(f"No action needed for: {desc} (confidence: {probs.get(desc, 0):.3f})")
                 
         except Exception as e:
-            print(f"❌ Frame processing error: {e}")
+            print(f"Frame processing error: {e}")
     
     def start(self):
         """Start the networked AI processing system"""
-        print("🚀 Starting Detection PC system...")
+        print("Starting Detection PC system...")
         
         # Initialize UDP sender
         if not self.command_sender.connect():
-            print("❌ Failed to initialize UDP sender")
+            print("Failed to initialize UDP sender")
             return False
         
         # Start frame receiver
         if not self.frame_receiver.start():
-            print("❌ Failed to start frame receiver")
+            print("Failed to start frame receiver")
             return False
         
-        print("✅ Detection PC system started!")
-        print(f"   📡 UDP sender: {self.command_sender.client_ip}:{self.command_sender.udp_port}")
-        print(f"   🎧 TCP receiver: Port {self.frame_receiver.tcp_port}")
+        print("Detection PC system started!")
+        print(f"   UDP sender: {self.command_sender.client_ip}:{self.command_sender.udp_port}")
+        print(f"   TCP receiver: Port {self.frame_receiver.tcp_port}")
         return True
     
     def stop(self):
         """Stop the networked AI processing system"""
-        print("🛑 Stopping Detection PC system...")
+        print("Stopping Detection PC system...")
         self.frame_receiver.stop()
         self.command_sender.cleanup()
         
@@ -449,7 +441,7 @@ class NetworkedAIProcessor:
                 pass
             self.ai_model = None
         
-        print("✅ Detection PC system stopped.")
+        print("Detection PC system stopped.")
     
     def get_status(self) -> Dict[str, Any]:
         """Get current system status for UI"""
@@ -485,9 +477,8 @@ def create_gradio_interface(processor: NetworkedAIProcessor):
         ai_model_loaded = status["ai_model_loaded"]
         total_frames = status.get("total_frames", 0)
         
-        # Debug: Print frame info occasionally
         if frame is not None and total_frames > 0 and total_frames % 120 == 0:
-            print(f"🖼️ UI displaying frame: {frame.shape}, dtype: {frame.dtype}, min: {frame.min()}, max: {frame.max()}")
+            print(f"UI displaying frame: {frame.shape}, dtype: {frame.dtype}, min: {frame.min()}, max: {frame.max()}")
         
         # Format confidence as string
         if confidence:
@@ -498,16 +489,15 @@ def create_gradio_interface(processor: NetworkedAIProcessor):
         # Determine connection status
         if connected:
             if ai_model_loaded:
-                status_text = "🟢 Connected & AI Ready"
+                status_text = "Connected & AI Ready"
             else:
-                status_text = "🟡 Connected (No AI Model)"
+                status_text = "Connected (No AI Model)"
         else:
             if ai_model_loaded:
-                status_text = "🟡 AI Ready (Waiting for Client PC)"
+                status_text = "AI Ready (Waiting for Client PC)"
             else:
-                status_text = "🟡 Ready to Start"
+                status_text = "Ready to Start"
         
-        # Add system status info
         if not status.get("system_ready", False):
             status_text += " - System Starting..."
         
@@ -525,7 +515,6 @@ def create_gradio_interface(processor: NetworkedAIProcessor):
             # Stop existing processor if running
             processor.stop()
             
-            # Update processor configuration
             processor.client_ip = game_ip
             processor.model_path = model_path
             processor.use_gpu = use_gpu
@@ -567,10 +556,9 @@ def create_gradio_interface(processor: NetworkedAIProcessor):
         gr.Markdown("<h1 style='text-align: center;'>Performance Analysis - Analysis PC</h1>")
         gr.Markdown("Networked AI processing system for gaming performance optimization")
         
-        # Add helpful instructions
         with gr.Row():
             gr.Markdown("""
-            **📋 Setup Instructions:**
+            **Setup Instructions:**
             1. Enter the Client PC's IP address
             2. Select an AI model file from the models folder
             3. Choose CPU or GPU device
@@ -613,11 +601,11 @@ def create_gradio_interface(processor: NetworkedAIProcessor):
                     stop_btn = gr.Button("Stop System", variant="stop")
                 
                 with gr.Row():
-                    refresh_btn = gr.Button("🔄 Refresh Status", variant="secondary")
+                    refresh_btn = gr.Button("Refresh Status", variant="secondary")
                 
                 connection_status = gr.Textbox(
                     label="Connection Status",
-                    value="🟡 Ready to Start",
+                    value="Ready to Start",
                     interactive=False
                 )
             
@@ -674,13 +662,11 @@ def create_gradio_interface(processor: NetworkedAIProcessor):
             outputs=None
         )
         
-        # Add refresh button for troubleshooting
         refresh_btn.click(
             fn=lambda: update_ui(),
             outputs=[fps_display, frame_display, prediction_display, confidence_display, connection_status, total_frames_display, bandwidth_display]
         )
         
-        # Auto-update UI
         interface.load(update_ui, outputs=[fps_display, frame_display, prediction_display, confidence_display, connection_status, total_frames_display, bandwidth_display])
         
 
@@ -689,7 +675,7 @@ def create_gradio_interface(processor: NetworkedAIProcessor):
 
 def main():
     """Main function to run the Detection PC system"""
-    print("🤖 Performance Analysis - Analysis PC")
+    print("Performance Analysis - Analysis PC")
     print("=" * 50)
     
     # Configuration
@@ -697,7 +683,7 @@ def main():
     if not client_ip:
         client_ip = CLIENT_PC_IP
     
-    print(f"\n📋 Configuration:")
+    print(f"\nConfiguration:")
     print(f"   Client PC: {client_ip}:{UDP_PORT}")
     print(f"   TCP Server: Port {TCP_PORT}")
     print()
@@ -709,15 +695,15 @@ def main():
     interface = create_gradio_interface(processor)
     
     try:
-        print("🌐 Launching Gradio web interface...")
+        print("Launching Gradio web interface...")
         interface.launch(server_name="0.0.0.0", server_port=7860, share=False)
     except KeyboardInterrupt:
-        print("\n🛑 Shutting down Detection PC system...")
+        print("\nShutting down Detection PC system...")
     except Exception as e:
-        print(f"❌ Unexpected error: {e}")
+        print(f"Unexpected error: {e}")
     finally:
         processor.stop()
-        print("✅ Detection PC system stopped.")
+        print("Detection PC system stopped.")
 
 if __name__ == "__main__":
     main()
